@@ -818,6 +818,165 @@
         }
 
         /* ══════════════════════════════════════════════════════════
+           CUSTOM MODAL
+           ══════════════════════════════════════════════════════════ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .modal-box {
+            background: #fff;
+            border-radius: var(--radius-lg);
+            max-width: 460px;
+            width: 100%;
+            padding: 40px 36px 32px;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+            text-align: center;
+            transform: scale(0.85) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+        .modal-overlay.active .modal-box {
+            transform: scale(1) translateY(0);
+        }
+        .modal-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            animation: modalPop 0.5s ease 0.2s both;
+        }
+        .modal-icon.success {
+            background: linear-gradient(135deg, #d4f5dc, #a8e6b4);
+            color: var(--green-dark);
+        }
+        .modal-icon.info {
+            background: linear-gradient(135deg, #fef3d4, #f5dfa0);
+            color: var(--gold-dark);
+        }
+        @keyframes modalPop {
+            0%   { transform: scale(0); }
+            60%  { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+        .modal-title {
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--charcoal);
+            margin-bottom: 12px;
+        }
+        .modal-body {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            line-height: 1.7;
+            margin-bottom: 28px;
+        }
+        .modal-body .modal-detail {
+            background: var(--cream);
+            border-radius: var(--radius-sm);
+            padding: 16px 20px;
+            margin: 16px 0;
+            text-align: left;
+            border-left: 4px solid var(--green);
+        }
+        .modal-body .modal-detail p {
+            font-size: 0.88rem;
+            color: var(--text);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal-body .modal-detail p:last-child {
+            margin-bottom: 0;
+        }
+        .modal-body .modal-detail strong {
+            color: var(--charcoal);
+            min-width: 80px;
+            display: inline-block;
+        }
+        .modal-phone {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--green), var(--green-dark));
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-top: 8px;
+            transition: all var(--transition);
+        }
+        .modal-phone:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(58,125,68,0.35);
+        }
+        .modal-close {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-family: var(--font-body);
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border: none;
+            padding: 12px 36px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .modal-close:hover {
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(200,169,110,0.4);
+        }
+        .modal-x {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--cream);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+        }
+        .modal-x:hover {
+            background: var(--cream-dark);
+            color: var(--charcoal);
+            transform: rotate(90deg);
+        }
+
+        /* ══════════════════════════════════════════════════════════
            RESPONSIVE
            ══════════════════════════════════════════════════════════ */
         @media (max-width: 1024px) {
@@ -1254,6 +1413,17 @@
         </div>
     </footer>
 
+    <!-- Custom Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box" id="modalBox">
+            <button class="modal-x" id="modalX" aria-label="Close">✕</button>
+            <div class="modal-icon" id="modalIcon">✓</div>
+            <h3 class="modal-title" id="modalTitle">Success</h3>
+            <div class="modal-body" id="modalBody"></div>
+            <button class="modal-close" id="modalCloseBtn">Got it!</button>
+        </div>
+    </div>
+
     <!-- Back to Top -->
     <button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
 
@@ -1328,30 +1498,89 @@
             }
         });
 
+        // ── Custom Modal System ─────────────────────────────────────
+        const modalOverlay  = document.getElementById('modalOverlay');
+        const modalIcon     = document.getElementById('modalIcon');
+        const modalTitle    = document.getElementById('modalTitle');
+        const modalBody     = document.getElementById('modalBody');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        const modalX        = document.getElementById('modalX');
+
+        function showModal({ icon = '✓', iconType = 'success', title = 'Success', bodyHTML = '', buttonText = 'Got it!' }) {
+            modalIcon.textContent = icon;
+            modalIcon.className = 'modal-icon ' + iconType;
+            modalTitle.textContent = title;
+            modalBody.innerHTML = bodyHTML;
+            modalCloseBtn.textContent = buttonText;
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        modalCloseBtn.addEventListener('click', closeModal);
+        modalX.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
         // ── Booking Form Submit ────────────────────────────────────
         document.getElementById('bookingForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const checkin  = document.getElementById('checkin').value;
             const checkout = document.getElementById('checkout').value;
-            const guests   = document.getElementById('guests').value;
-            alert(
-                `🗓 Availability Request Sent!\n\n` +
-                `Check-in:  ${checkin}\n` +
-                `Check-out: ${checkout}\n` +
-                `Guests:    ${guests}\n\n` +
-                `Our team will get back to you shortly.\n` +
-                `You can also call us at 0301 4274946.`
-            );
+            const guestsEl = document.getElementById('guests');
+            const guests   = guestsEl.options[guestsEl.selectedIndex].text;
+
+            const checkinDate  = new Date(checkin).toLocaleDateString('en-PK', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+            const checkoutDate = new Date(checkout).toLocaleDateString('en-PK', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+
+            showModal({
+                icon: '✓',
+                iconType: 'success',
+                title: 'Availability Request Sent!',
+                bodyHTML: `
+                    <p>Thank you for your interest! Here's a summary of your request:</p>
+                    <div class="modal-detail">
+                        <p>📅 <strong>Check-in:</strong> ${checkinDate}</p>
+                        <p>📅 <strong>Check-out:</strong> ${checkoutDate}</p>
+                        <p>👤 <strong>Guests:</strong> ${guests}</p>
+                    </div>
+                    <p>Our team will get back to you shortly. You can also reach us directly:</p>
+                    <a href="tel:+923014274946" class="modal-phone">📞 0301 4274946</a>
+                `,
+                buttonText: 'Done'
+            });
         });
 
         // ── Book Now Buttons ───────────────────────────────────────
         document.querySelectorAll('.btn-book').forEach(btn => {
             btn.addEventListener('click', () => {
-                alert(
-                    '📞 To book this room, please contact us:\n\n' +
-                    'Phone: 0301 4274946\n' +
-                    'Or scroll up and use the availability checker!'
-                );
+                const roomName = btn.closest('.room-info').querySelector('h3').textContent;
+                const roomPrice = btn.closest('.room-info').querySelector('.room-price').textContent.trim();
+
+                showModal({
+                    icon: '🛏️',
+                    iconType: 'info',
+                    title: `Book ${roomName}`,
+                    bodyHTML: `
+                        <p>You've selected the <strong>${roomName}</strong> at <strong>${roomPrice}</strong>.</p>
+                        <div class="modal-detail">
+                            <p>📞 <strong>Phone:</strong> <a href="tel:+923014274946" style="color: var(--green); font-weight: 600;">0301 4274946</a></p>
+                            <p>💬 <strong>WhatsApp:</strong> Send us a message anytime</p>
+                            <p>✉️ <strong>Email:</strong> info@pakeezaone.com</p>
+                        </div>
+                        <p>Or use the <strong>availability checker</strong> above to check dates first!</p>
+                        <a href="tel:+923014274946" class="modal-phone">📞 Call Now to Book</a>
+                    `,
+                    buttonText: 'Close'
+                });
             });
         });
 
